@@ -19,3 +19,12 @@ const user = {
     height : 100,
     color : "WHITE"
 }
+
+const com = {
+    x : canvas.width - 10,
+    y : (canvas.height - 100)/2,
+    width : 10,
+    height : 100,
+    score : 0,
+    color : "WHITE"
+}
