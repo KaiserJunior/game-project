@@ -69,4 +69,4 @@ function drawNet(){
     for(let i = 0; i <= canvas.height; i+=15){
         drawRect(net.x, net.y + i, net.width, net.height, net.color);
     }
-}
+}   
