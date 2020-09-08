@@ -70,3 +70,48 @@ function drawNet(){
         drawRect(net.x, net.y + i, net.width, net.height, net.color);
     }
 }   
+
+function drawText(text,x,y){
+    ctx.fillStyle = "FFF";
+    ctx.font = "75px verdana";
+    ctx.fillText(text,x,y);
+}
+
+function update(){
+    if( ball.x - ball.radius < 0){
+        com.score++;
+        comScore.play();
+        resetball();
+    }
+    else if( ball.x + ball.radius > canvas.width){
+        user.score++;
+        userScore.play();
+        resetball();
+    }
+    
+    ball.x += ball.velocityX;
+    ball.y += ball.velocityY;
+}
+
+
+function render(){
+    drawRect(0,0, canvas.width, canvas.height, "#000");
+    
+    drawText(user.score,canvas.width/4,canvas.height/5);
+    
+    drawText(com.score,3*canvas.width/4,canvas.height/5);
+    
+    drawNet();
+    
+    drawRect(user.x,user.y, user.width, user.height, user.color);
+    
+    drawRect(com.x,com.y, com.width, com.height, com.color);
+    
+    drawArc(ball.x,ball.y,ball.radius,ball.color);
+    
+}
+
+function game(){
+    update();
+    render();
+}
