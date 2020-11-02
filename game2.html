@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Pong</title>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="400" height="500"></canvas>
+    <script>
+        var canvas, canvasContext;
+
+        window.onload = function() {
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+
+            document.addEventListener('keydown', keyPressed);
+            document.addEventListener('keyup', keyReleased);
+
+            setInterval(mainloop, 1000 / 50);
+        }
+
+        //ball //
+        var ballXpos = 0;
+        var ballYpos = 0;
+        var ballXspeed = 4;
+        var ballYspeed = 4;
+        const ballSize = 10;
+
+        //paddle //
+        const paddle1Xpos = 10;
+        var paddle1Ypos = 140;
+        const paddle1Width = 10;
+        const paddle1Height = 100;
+        var paddle1Yspeed = 5;
+
+        //player paddle //
+        const P_PaddleXpos = 400 - 10 * 2;
+        var P_PaddleYpos = 0;
+        const P_Paddle_Width = 10;
+        const P_Paddle_Height = 100;
+        var P_PaddleYspeed = 5;
+
+        // player paddle keypress //
+        const UP_ARROW_KEY = 38;
+        const DOWN_ARROW_KEY = 40;
+        var upArrowKeyPressed = false;
+        var downArrowKeyPressed = false;
+
+
+        var startingPos = true; // toggle starting position
+
+        var playerScore = 0;
+        var aiScore = 0;
+
+        function mainloop() {
+            colorRect(0, 0, canvas.width, canvas.height, 'black') //background
+            colorRect(ballXpos, ballYpos, ballSize, ballSize, 'white') //ball
+
+
+            colorRect(paddle1Xpos, paddle1Ypos, paddle1Width, paddle1Height, 'white'); //AI paddle//
+
+            colorRect(P_PaddleXpos, P_PaddleYpos, P_Paddle_Width, P_Paddle_Height, 'white'); //player paddle//
+
+            drawText(20, 20, 'red', 'AI Score ' + aiScore, '15px Arial'); //ai score display
+            drawText(canvas.width - 120, 20, 'white', 'Player Score ' + playerScore, '15px Arial'); //player score display
+
+            ballMove();
+            paddleAImove();
+            paddlePlayerMove();
+
+            if (startingPos) {
+                startPos();
+                startingPos = false;
+            }
+        }
+
+        function keyPressed(evt) {
+            if (evt.keyCode == UP_ARROW_KEY) {
+                upArrowKeyPressed = true;
+            }
+
+            if (evt.keyCode == DOWN_ARROW_KEY) {
+                downArrowKeyPressed = true;
+            }
+        }
+
+        function keyReleased(evt) {
+            if (evt.keyCode == UP_ARROW_KEY) {
+                upArrowKeyPressed = false;
+            }
+
+            if (evt.keyCode == DOWN_ARROW_KEY) {
+                downArrowKeyPressed = false;
+            }
+        }
+
+        function ballMove() {
+            ballXpos = ballXpos + ballXspeed; //ball x move
+            ballYpos = ballYpos + ballYspeed;
+
+
+            if (ballYpos > paddle1Ypos - ballSize && ballYpos < paddle1Ypos + paddle1Height && ballXpos < paddle1Xpos + paddle1Width) {
+                ballXspeed *= -1;
+            }
+
+            if (ballYpos > P_PaddleYpos - ballSize && ballYpos < P_PaddleYpos + P_Paddle_Height && ballXpos > P_PaddleXpos - ballSize) {
+                ballXspeed *= -1;
+            }
+
+            if (ballXpos > canvas.width - ballSize) { // hit right edge
+                ballXspeed *= -1;
+                startingPos = true;
+                aiScore++;
+            }
+
+            if (ballXpos < 0) { //hit left edge
+                ballXspeed *= -1;
+                startingPos = true;
+                playerScore++;
+            }
+
+            if (ballYpos > canvas.height - ballSize) {
+                ballYspeed *= -1;
+            }
+
+            if (ballYpos < 0) {
+                ballYspeed *= -1;
+            }
+        }
+
+        function startPos() {
+            ballXpos = canvas.width / 2 - ballSize / 2;
+            ballYpos = canvas.height / 2 - ballSize / 2;
+            P_PaddleYpos = ballYpos - P_Paddle_Height / 2;
+        }
+
+        function paddleAImove() {
+            if (ballYpos < paddle1Ypos) {
+                paddle1Ypos -= paddle1Yspeed;
+            }
+
+            if (ballYpos > paddle1Ypos + paddle1Height - ballSize) {
+                paddle1Ypos += paddle1Yspeed;
+            }
+        }
+
+        function paddlePlayerMove() {
+            if (upArrowKeyPressed) {
+                P_PaddleYpos -= P_PaddleYspeed;
+            }
+
+            if (downArrowKeyPressed) {
+                P_PaddleYpos += P_PaddleYspeed;
+            }
+        }
+
+
+        function colorRect(x, y, w, h, color) {
+            canvasContext.fillStyle = color;
+            canvasContext.fillRect(x, y, w, h);
+        }
+
+        function drawText(x, y, color, msg, sizeStyle) {
+            canvasContext.fillStyle = color;
+            canvasContext.fillText(msg, x, y);
+            canvasContext.font = sizeStyle;
+        }
+    </script>
+</body></html>
