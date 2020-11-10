@@ -6,7 +6,7 @@
 </head>
 
 <body>
-    <canvas id="gameCanvas" width="400" height="500"></canvas>
+    <canvas id="gameCanvas" width="700" height="400"></canvas>
     <script>
         var canvas, canvasContext;
 
@@ -17,29 +17,30 @@
             document.addEventListener('keydown', keyPressed);
             document.addEventListener('keyup', keyReleased);
 
-            setInterval(mainloop, 1000 / 50);
+            setInterval(mainloop, 60 / difficulty);
         }
 
-        //ball //
+        //ball//    
         var ballXpos = 0;
         var ballYpos = 0;
-        var ballXspeed = 4;
-        var ballYspeed = 4;
+        var ballXspeed = 5;
+        var ballYspeed = 5;
         const ballSize = 10;
+
 
         //paddle //
         const paddle1Xpos = 10;
         var paddle1Ypos = 140;
         const paddle1Width = 10;
-        const paddle1Height = 100;
-        var paddle1Yspeed = 5;
+        const paddle1Height = 150;
+        var paddle1Yspeed = 6;
 
         //player paddle //
-        const P_PaddleXpos = 400 - 10 * 2;
+        const P_PaddleXpos = 700 - 10 * 2;
         var P_PaddleYpos = 0;
         const P_Paddle_Width = 10;
         const P_Paddle_Height = 100;
-        var P_PaddleYspeed = 5;
+        var P_PaddleYspeed = 6;
 
         // player paddle keypress //
         const UP_ARROW_KEY = 38;
@@ -47,32 +48,150 @@
         var upArrowKeyPressed = false;
         var downArrowKeyPressed = false;
 
+        var GameRun = true;
 
         var startingPos = true; // toggle starting position
 
         var playerScore = 0;
         var aiScore = 0;
 
+        var balls = [];
+
+        var ballGen = true;
+
+
         function mainloop() {
-            colorRect(0, 0, canvas.width, canvas.height, 'black') //background
-            colorRect(ballXpos, ballYpos, ballSize, ballSize, 'white') //ball
+            if (GameRun) {
+                if (ballGen) {
+                    makeBalls();
+                    ballGen = false;
+                }
+                colorRect(0, 0, canvas.width, canvas.height, 'black') //background
+
+                colorRect(ballXpos, ballYpos, ballSize, ballSize, 'white'); // ball
+
+                colorRect(paddle1Xpos, paddle1Ypos, paddle1Width, paddle1Height, 'white'); //AI paddle//
+
+                colorRect(P_PaddleXpos, P_PaddleYpos, P_Paddle_Width, P_Paddle_Height, 'white'); //player paddle//
+
+                drawText(20, 20, 'red', 'AI Score ' + aiScore, '15px Arial'); //ai score display
+                drawText(canvas.width - 120, 20, 'white', userName + ' Score ' + playerScore, '15px Arial'); //player score display
 
 
-            colorRect(paddle1Xpos, paddle1Ypos, paddle1Width, paddle1Height, 'white'); //AI paddle//
+                gameOver();
+                paddleAImove();
+                paddlePlayerMove();
+                drawBalls();
+                MoveBalls();
+                ballMove();
+                
 
-            colorRect(P_PaddleXpos, P_PaddleYpos, P_Paddle_Width, P_Paddle_Height, 'white'); //player paddle//
+                if (startingPos) {
+                    startPos();
+                    startingPos = false;
+                }
 
-            drawText(20, 20, 'red', 'AI Score ' + aiScore, '15px Arial'); //ai score display
-            drawText(canvas.width - 120, 20, 'white', 'Player Score ' + playerScore, '15px Arial'); //player score display
-
-            ballMove();
-            paddleAImove();
-            paddlePlayerMove();
-
-            if (startingPos) {
-                startPos();
-                startingPos = false;
+                gameOver();
+            } else {
+                colorRect(0, 0, canvas.width, canvas.height, 'black');
+                colorText('GAME OVER  = ' + playerScore, 50, 50, '20px Arial', 'red');
             }
+
+            if (GameRun == false) {
+
+            }
+        }
+
+        var max = 10;
+        var min = 4;
+
+        function makeBalls() {
+            var size = 10;
+            var xPos = Math.floor(Math.random() * (canvas.width - size));
+            var yPos = 0;
+            var xSpeed = Math.floor(Math.random() * (max - min)) + min;
+            var ySpeed = Math.floor(Math.random() * (max - min)) + min;
+
+            var ball = {
+                xPos: xPos,
+                yPos: yPos,
+                size: size,
+                xSpeed: xSpeed,
+                ySpeed: ySpeed
+            }
+
+            balls.push(ball);
+        }
+
+        function drawBalls() {
+            balls.forEach(function(ball, i, array) {
+                colorRect(ball.xPos, ball.yPos, ball.size, ball.size, 'white');
+            });
+        }
+
+        function MoveBalls() {
+            balls.forEach(function(ball, i, array) {
+                ball.xPos += ball.xSpeed;
+                ball.yPos += ball.ySpeed;
+
+
+                if (ball.yPos > paddle1Ypos - ball.size && ball.yPos < paddle1Ypos + paddle1Height && ball.xPos < paddle1Xpos + paddle1Width) {
+                    ball.xSpeed *= -1;
+                }
+
+                if (ball.yPos > P_PaddleYpos - ball.size && ball.yPos < P_PaddleYpos + P_Paddle_Height && ball.xPos > P_PaddleXpos - ball.size) {
+                    ball.xSpeed *= -1;
+                }
+
+                if (ball.xPos > canvas.width - ball.size) { // hit right edge
+                    ball.xSpeed *= -1;
+                    startingPos = true;
+                    aiScore++;
+                }
+
+                if (ball.xPos < 0) { //hit left edge
+                    ball.xSpeed *= -1;
+                    startingPos = true;
+                    playerScore++;
+                }
+
+                if (ball.yPos > canvas.height - ball.size) {
+                    ball.ySpeed *= -1;
+                }
+
+                if (ball.yPos < 0) {
+                    ball.ySpeed *= -1;
+                }
+            });
+        }
+
+        var userName = '';
+
+        while (userName == '' || userName == null) {
+            userName = prompt('What is your name?');
+        }
+
+
+        var difficulty = '';
+
+        while (isNaN(difficulty) || difficulty > 5 || difficulty < 1) {
+            difficulty = prompt('Choose a number 1-5 the higher the number the harder')
+        }
+
+        if (difficulty == 1) {
+            alert("Difficulty : Beginner")
+        }
+        if (difficulty == 2) {
+            alert("Difficulty : Easy")
+        }
+        if (difficulty == 3) {
+            alert("Difficulty : Normal")
+        }
+        if (difficulty == 4) {
+            alert("Difficulty :Hard")
+        }
+        if (difficulty == 5) {
+            alert("Difficulty : Expert")
         }
 
         function keyPressed(evt) {
@@ -98,7 +217,6 @@
         function ballMove() {
             ballXpos = ballXpos + ballXspeed; //ball x move
             ballYpos = ballYpos + ballYspeed;
-
 
             if (ballYpos > paddle1Ypos - ballSize && ballYpos < paddle1Ypos + paddle1Height && ballXpos < paddle1Xpos + paddle1Width) {
                 ballXspeed *= -1;
@@ -129,6 +247,16 @@
             }
         }
 
+
+
+        function gameOver() {
+            if (aiScore > 5) {
+                GameRun = false;
+            }
+        }
+
+
+
         function startPos() {
             ballXpos = canvas.width / 2 - ballSize / 2;
             ballYpos = canvas.height / 2 - ballSize / 2;
@@ -136,12 +264,13 @@
         }
 
         function paddleAImove() {
-            if (ballYpos < paddle1Ypos) {
-                paddle1Ypos -= paddle1Yspeed;
+            paddle1Ypos = paddle1Yspeed + paddle1Ypos;
+            if (paddle1Ypos > canvas.height - paddle1Height) {
+                paddle1Yspeed *= -1;
             }
 
-            if (ballYpos > paddle1Ypos + paddle1Height - ballSize) {
-                paddle1Ypos += paddle1Yspeed;
+            if (paddle1Ypos < 0) {
+                paddle1Yspeed *= -1;
             }
         }
 
@@ -166,5 +295,14 @@
             canvasContext.fillText(msg, x, y);
             canvasContext.font = sizeStyle;
         }
+
+        function colorText(msg, x, y, f, c) {
+            canvasContext.fillStyle = c;
+            canvasContext.font = f;
+            canvasContext.fillText(msg, x, y);
+        }
+
     </script>
-</body></html>
+</body>
+
+</html>
