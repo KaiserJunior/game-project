@@ -17,10 +17,10 @@
             document.addEventListener('keydown', keyPressed);
             document.addEventListener('keyup', keyReleased);
 
-            setInterval(mainloop, 60 / difficulty);
+            setInterval(mainloop, 50 / difficulty);
         }
 
-        //ball//    
+        //ball info//    
         var ballXpos = 0;
         var ballYpos = 0;
         var ballXspeed = 5;
@@ -28,34 +28,34 @@
         const ballSize = 10;
 
 
-        //paddle //
+        //paddle info//
         const paddle1Xpos = 10;
         var paddle1Ypos = 140;
         const paddle1Width = 10;
         const paddle1Height = 150;
         var paddle1Yspeed = 6;
 
-        //player paddle //
+        //player paddle info//
         const P_PaddleXpos = 700 - 10 * 2;
         var P_PaddleYpos = 0;
         const P_Paddle_Width = 10;
         const P_Paddle_Height = 100;
         var P_PaddleYspeed = 6;
 
-        // player paddle keypress //
+        // player paddle keypress info//
         const UP_ARROW_KEY = 38;
         const DOWN_ARROW_KEY = 40;
         var upArrowKeyPressed = false;
         var downArrowKeyPressed = false;
 
-        var GameRun = true;
+        var GameRun = true; //if true run game and if false gameover
 
         var startingPos = true; // toggle starting position
 
-        var playerScore = 0;
-        var aiScore = 0;
+        var playerScore = 0; //player score
+        var aiScore = 0; //ai score
 
-        var balls = [];
+        var balls = []; //array
 
         var ballGen = true;
 
@@ -66,9 +66,9 @@
                     makeBalls();
                     ballGen = false;
                 }
-                colorRect(0, 0, canvas.width, canvas.height, 'black') //background
+                colorRect(0, 0, canvas.width, canvas.height, 'black') //background//
 
-                colorRect(ballXpos, ballYpos, ballSize, ballSize, 'white'); // ball
+                colorRect(ballXpos, ballYpos, ballSize, ballSize, 'white'); //ball//
 
                 colorRect(paddle1Xpos, paddle1Ypos, paddle1Width, paddle1Height, 'white'); //AI paddle//
 
@@ -84,26 +84,36 @@
                 drawBalls();
                 MoveBalls();
                 ballMove();
-                
 
-                if (startingPos) {
+
+                if (startingPos) { //set starting position
                     startPos();
                     startingPos = false;
                 }
 
                 gameOver();
-            } else {
-                colorRect(0, 0, canvas.width, canvas.height, 'black');
-                colorText('GAME OVER  = ' + playerScore, 50, 50, '20px Arial', 'red');
+                youWin();
+            } 
+            
+            else {
+                colorRect(0, 0, canvas.width, canvas.height, 'black'); //black screen
+                colorText('GAME OVER  = ' + playerScore, 50, 50, '20px Arial', 'red'); //display "GAME OVER" end screen
+            }
+            
+            else if {
+                colorRect(0, 0, canvas.width, canvas.height, 'black'); //black screen
+                colorText('YOU WIN = ' + playerScore, 50, 50, '20px Arial', 'blue'); //display "YOU WIN" end screen
             }
 
             if (GameRun == false) {
 
             }
-        }
+        }// end code
 
         var max = 10;
         var min = 4;
+        
+        //array for the ball//
 
         function makeBalls() {
             var size = 10;
@@ -120,16 +130,17 @@
                 ySpeed: ySpeed
             }
 
-            balls.push(ball);
-        }
+            balls.push(ball);//creates the ball 1
+            
+        }//end code
 
-        function drawBalls() {
+        function drawBalls() {//for each loop draw the ball using the colorRect
             balls.forEach(function(ball, i, array) {
                 colorRect(ball.xPos, ball.yPos, ball.size, ball.size, 'white');
             });
-        }
+        }//end code
 
-        function MoveBalls() {
+        function MoveBalls() {//the ball movement 
             balls.forEach(function(ball, i, array) {
                 ball.xPos += ball.xSpeed;
                 ball.yPos += ball.ySpeed;
@@ -163,38 +174,44 @@
                     ball.ySpeed *= -1;
                 }
             });
-        }
+        }//end code
+        
 
-        var userName = '';
+        var userName = '';//username display prompt
 
         while (userName == '' || userName == null) {
             userName = prompt('What is your name?');
         }
 
 
-        var difficulty = '';
+        var difficulty = '';//prompt to set the difficulty of the game
 
         while (isNaN(difficulty) || difficulty > 5 || difficulty < 1) {
             difficulty = prompt('Choose a number 1-5 the higher the number the harder')
         }
 
         if (difficulty == 1) {
-            alert("Difficulty : Beginner")
+            alert("Difficulty : Beginner")//prompt response
         }
+        
         if (difficulty == 2) {
-            alert("Difficulty : Easy")
+            alert("Difficulty : Easy")//prompt response
         }
+        
         if (difficulty == 3) {
-            alert("Difficulty : Normal")
+            alert("Difficulty : Normal")//prompt response
         }
+        
         if (difficulty == 4) {
-            alert("Difficulty :Hard")
+            alert("Difficulty :Hard")//prompt response
         }
+        
         if (difficulty == 5) {
-            alert("Difficulty : Expert")
+            alert("Difficulty : Expert")//prompt response
         }
+        
 
-        function keyPressed(evt) {
+        function keyPressed(evt) {//
             if (evt.keyCode == UP_ARROW_KEY) {
                 upArrowKeyPressed = true;
             }
@@ -202,7 +219,8 @@
             if (evt.keyCode == DOWN_ARROW_KEY) {
                 downArrowKeyPressed = true;
             }
-        }
+        }//end code
+        
 
         function keyReleased(evt) {
             if (evt.keyCode == UP_ARROW_KEY) {
@@ -212,9 +230,10 @@
             if (evt.keyCode == DOWN_ARROW_KEY) {
                 downArrowKeyPressed = false;
             }
-        }
+        }//end code
+        
 
-        function ballMove() {
+        function ballMove() {//movement for 2nd ball
             ballXpos = ballXpos + ballXspeed; //ball x move
             ballYpos = ballYpos + ballYspeed;
 
@@ -245,25 +264,31 @@
             if (ballYpos < 0) {
                 ballYspeed *= -1;
             }
-        }
+        }//end code
 
 
-
-        function gameOver() {
-            if (aiScore > 5) {
+        function gameOver() {//triggers the game over
+            if (aiScore > 9) {
                 GameRun = false;
             }
-        }
+        }//end code
+        
+        
+        function youWin(){//triggers the winning screen
+            if (playerScore > 9){
+                GameRun = false;
+            }
+        }//end code
+        
 
-
-
-        function startPos() {
+        function startPos() {//the set position for the ball x and y pos and the paddle 
             ballXpos = canvas.width / 2 - ballSize / 2;
             ballYpos = canvas.height / 2 - ballSize / 2;
             P_PaddleYpos = ballYpos - P_Paddle_Height / 2;
-        }
+        }//end code
+        
 
-        function paddleAImove() {
+        function paddleAImove() {//the simple up and down movement of the ai paddle 
             paddle1Ypos = paddle1Yspeed + paddle1Ypos;
             if (paddle1Ypos > canvas.height - paddle1Height) {
                 paddle1Yspeed *= -1;
@@ -272,9 +297,10 @@
             if (paddle1Ypos < 0) {
                 paddle1Yspeed *= -1;
             }
-        }
+        }// end code
+        
 
-        function paddlePlayerMove() {
+        function paddlePlayerMove() {//function to move the player paddle via key presses
             if (upArrowKeyPressed) {
                 P_PaddleYpos -= P_PaddleYspeed;
             }
@@ -282,25 +308,27 @@
             if (downArrowKeyPressed) {
                 P_PaddleYpos += P_PaddleYspeed;
             }
-        }
+        }// end code
 
-
-        function colorRect(x, y, w, h, color) {
+        function colorRect(x, y, w, h, color) {//draws the spirtes for the game
             canvasContext.fillStyle = color;
             canvasContext.fillRect(x, y, w, h);
-        }
+        }//end code
+        
 
-        function drawText(x, y, color, msg, sizeStyle) {
+        function drawText(x, y, color, msg, sizeStyle) {//draws the username and score in game
             canvasContext.fillStyle = color;
             canvasContext.fillText(msg, x, y);
             canvasContext.font = sizeStyle;
-        }
+        }//end code
+        
 
-        function colorText(msg, x, y, f, c) {
+        function colorText(msg, x, y, f, c) {// draws the gameover screen
             canvasContext.fillStyle = c;
             canvasContext.font = f;
             canvasContext.fillText(msg, x, y);
-        }
+        }//end code
+        
 
     </script>
 </body>
